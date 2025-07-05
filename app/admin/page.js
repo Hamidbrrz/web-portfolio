@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 
 export default function AdminPage() {
   const PASSWORD = 'hamid2025'; // 🔐 tu peux changer ça
+  const API_URL = 'https://api-portfolio-1-puyb.onrender.com/api/posts';
+
   const [isAuthed, setIsAuthed] = useState(false);
   const [password, setPassword] = useState('');
   const [posts, setPosts] = useState([]);
@@ -10,7 +12,6 @@ export default function AdminPage() {
   const [content, setContent] = useState('');
   const [message, setMessage] = useState('');
 
-  // Vérifie si le mot de passe est déjà stocké dans le navigateur
   useEffect(() => {
     if (localStorage.getItem('auth') === 'true') {
       setIsAuthed(true);
@@ -29,14 +30,14 @@ export default function AdminPage() {
   };
 
   const fetchPosts = async () => {
-    const res = await fetch("http://localhost:5000/api/posts");
+    const res = await fetch(API_URL);
     const data = await res.json();
     setPosts(data);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:5000/api/posts", {
+    const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, content }),
@@ -52,7 +53,7 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`http://localhost:5000/api/posts/${id}`, {
+    const res = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
     });
     if (res.ok) {
