@@ -9,7 +9,7 @@ export default function BlogPage() {
     const fetchPosts = async () => {
       try {
         const res = await fetch('https://api-portfolio-1-puyb.onrender.com/api/blog');
-        if (!res.ok) throw new Error('Erreur lors du chargement');
+        if (!res.ok) throw new Error('Erreur réseau');
         const data = await res.json();
         setPosts(data);
       } catch (err) {
@@ -21,23 +21,18 @@ export default function BlogPage() {
   }, []);
 
   return (
-    <section className="projects-container">
+    <div className="projects-container">
       <h1 className="projects-title">Blog</h1>
-
-      {error && (
-        <p className="project-placeholder">{error}</p>
-      )}
-
-      {!error && posts.length === 0 && (
+      {error && <p className="project-placeholder">{error}</p>}
+      {posts.length === 0 && !error && (
         <p className="project-placeholder">Aucun article pour le moment.</p>
       )}
-
       {posts.map((post) => (
         <div key={post.id} className="project-card">
-          <h2 className="text-xl font-bold mb-1">{post.title}</h2>
-          <p className="text-sm text-slate-300">{post.content}</p>
+          <h2>{post.title}</h2>
+          <p>{post.content}</p>
         </div>
       ))}
-    </section>
+    </div>
   );
 }
