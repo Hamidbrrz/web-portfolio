@@ -48,12 +48,6 @@ Une **application mobile React Native (Expo)** est prévue prochainement, pour p
 - [x] ✅ Déploiement en production
 - [ ] 📱 Application mobile React Native (à venir)
 
----
-
-## 🙌 Remerciements
-
-Projet réalisé en 3 nuits seulement, malgré une semaine chargée et plusieurs déplacements.  
-Objectif : livrer un portfolio propre, dynamique et évolutif.
 
 ---
 
