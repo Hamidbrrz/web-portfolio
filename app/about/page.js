@@ -47,7 +47,7 @@ export default function AboutPage() {
           alt="Photo de profil"
           width={140}
           height={200}
-          style={{ borderRadius: '9999px', objectFit: 'cover' }}
+          className="about-photo-img"
         />
       </div>
       <h2 className="about-title">{aboutData.name}</h2>

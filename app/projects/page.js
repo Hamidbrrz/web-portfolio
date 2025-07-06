@@ -11,10 +11,10 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <section className="about-section">
-      <h1 className="about-title">Mes projets</h1>
+    <section className="projects-section">
+      <h1 className="projects-title">Mes projets</h1>
       {projects.length === 0 ? (
-        <p className="about-bio">Aucun projet pour le moment.</p>
+        <p className="project-placeholder">Aucun projet pour le moment.</p>
       ) : (
         <div className="project-list">
           {projects.map((proj) => (

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function ContactPage() {
   const [contact, setContact] = useState(null);
@@ -19,13 +20,13 @@ export default function ContactPage() {
       <p>{contact.message}</p>
       <div className="contact-links">
         <a href={`mailto:${contact.email}`} className="contact-link">
-          <img src="/icons/email.svg" alt="email" /> {contact.email}
+          <Image src="/email.png" alt="email" width={24} height={24} /> {contact.email}
         </a>
-        <a href={contact.linkedin} className="contact-link" target="_blank">
-          <img src="/icons/linkedin.svg" alt="linkedin" /> LinkedIn
+        <a href={contact.linkedin} className="contact-link" target="_blank" rel="noreferrer">
+          <Image src="/linkedin.png" alt="linkedin" width={24} height={24} /> LinkedIn
         </a>
-        <a href={contact.github} className="contact-link" target="_blank">
-          <img src="/icons/github.svg" alt="github" /> GitHub
+        <a href={contact.github} className="contact-link" target="_blank" rel="noreferrer">
+          <Image src="/git.svg" alt="github" width={24} height={24} /> GitHub
         </a>
       </div>
     </section>

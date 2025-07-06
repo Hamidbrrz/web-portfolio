@@ -8,7 +8,7 @@ export default function BlogDetailPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/posts`)
+    fetch(`https://api-portfolio-1-puyb.onrender.com/api/blog`)
       .then((res) => res.json())
       .then((data) => {
         const found = data.find((p) => p.id === parseInt(id));
