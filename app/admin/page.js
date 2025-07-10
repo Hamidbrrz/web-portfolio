@@ -2,10 +2,12 @@
 import { useState, useEffect } from 'react';
 
 export default function AdminPage() {
-  const PASSWORD = 'hamid2025';
   const [isAuthed, setIsAuthed] = useState(false);
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [section, setSection] = useState('');
+
+  const API = 'https://api-portfolio-1-puyb.onrender.com';
 
   // ==== À PROPOS ====
   const [aboutName, setAboutName] = useState('');
@@ -14,7 +16,7 @@ export default function AdminPage() {
   const [aboutImageUrl, setAboutImageUrl] = useState('');
 
   const fetchAbout = async () => {
-    const res = await fetch('https://api-portfolio-1-puyb.onrender.com/api/about');
+    const res = await fetch(`${API}/api/about`);
     const data = await res.json();
     setAboutName(data.name || '');
     setAboutTitle(data.title || '');
@@ -24,22 +26,118 @@ export default function AdminPage() {
 
   const handleAboutSubmit = async (e) => {
     e.preventDefault();
-    await fetch('https://api-portfolio-1-puyb.onrender.com/api/about', {
+    await fetch(`${API}/api/about`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: aboutName,
-        title: aboutTitle,
-        bio: aboutBio,
-        image_url: aboutImageUrl,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ name: aboutName, title: aboutTitle, bio: aboutBio, image_url: aboutImageUrl }),
     });
     alert('À propos mis à jour !');
   };
 
-  // ==== IMPORT/EXPORT ====
+  // ==== PROJETS ====
+  const [projects, setProjects] = useState([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [link, setLink] = useState('');
+
+  const fetchProjects = async () => {
+    const res = await fetch(`${API}/api/projects`);
+    const data = await res.json();
+    setProjects(data || []);
+  };
+
+  const handleAddProject = async (e) => {
+    e.preventDefault();
+    await fetch(`${API}/api/projects`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ title, description, link }),
+    });
+    setTitle('');
+    setDescription('');
+    setLink('');
+    fetchProjects();
+  };
+
+  const handleDeleteProject = async (id) => {
+    await fetch(`${API}/api/projects/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    fetchProjects();
+  };
+
+  // ==== BLOG ====
+  const [posts, setPosts] = useState([]);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [blogContent, setBlogContent] = useState('');
+
+  const fetchBlog = async () => {
+    const res = await fetch(`${API}/api/blog`);
+    const data = await res.json();
+    setPosts(data || []);
+  };
+
+  const handleAddBlog = async (e) => {
+    e.preventDefault();
+    await fetch(`${API}/api/blog`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ title: blogTitle, content: blogContent }),
+    });
+    setBlogTitle('');
+    setBlogContent('');
+    fetchBlog();
+  };
+
+  const handleDeleteBlog = async (id) => {
+    await fetch(`${API}/api/blog/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    fetchBlog();
+  };
+
+  // ==== CONTACT ====
+  const [email, setEmail] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [github, setGithub] = useState('');
+  const [message, setMessage] = useState('');
+
+  const fetchContact = async () => {
+    const res = await fetch(`${API}/api/contact`);
+    const data = await res.json();
+    setEmail(data.email || '');
+    setLinkedin(data.linkedin || '');
+    setGithub(data.github || '');
+    setMessage(data.message || '');
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    await fetch(`${API}/api/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ email, linkedin, github, message }),
+    });
+    alert('Contact mis à jour !');
+  };
+
+  // ==== EXPORT / IMPORT ====
   const handleExport = async () => {
-    const res = await fetch('https://api-portfolio-1-puyb.onrender.com/api/export', {
+    const res = await fetch(`${API}/api/export`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     const data = await res.json();
@@ -56,7 +154,7 @@ export default function AdminPage() {
     if (!file) return;
     const text = await file.text();
     const json = JSON.parse(text);
-    await fetch('https://api-portfolio-1-puyb.onrender.com/api/import', {
+    await fetch(`${API}/api/import`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,12 +172,23 @@ export default function AdminPage() {
     }
   }, []);
 
-  const handleLogin = () => {
-    if (password === PASSWORD) {
-      localStorage.setItem('auth', 'true');
-      setIsAuthed(true);
-    } else {
-      alert('Mot de passe incorrect');
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(`${API}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('auth', 'true');
+        localStorage.setItem('token', data.token);
+        setIsAuthed(true);
+      } else {
+        alert(data.error || 'Erreur lors de la connexion');
+      }
+    } catch {
+      alert('Erreur réseau');
     }
   };
 
@@ -87,17 +196,10 @@ export default function AdminPage() {
     return (
       <main className="admin-login">
         <div className="login-card">
-          <h1>🔐 Accès Admin</h1>
-          <input
-            className="login-input"
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button className="login-button" onClick={handleLogin}>
-            Se connecter
-          </button>
+          <h1>🔐 Connexion Admin</h1>
+          <input className="login-input" type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <input className="login-input" type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <button className="login-button" onClick={handleLogin}>Se connecter</button>
         </div>
       </main>
     );
@@ -117,7 +219,21 @@ export default function AdminPage() {
           <input type="file" accept="application/json" onChange={handleImport} style={{ display: 'none' }} />
         </label>
       </div>
-      {/* ... reste inchangé ... */}
+
+      {section === 'about' && (
+        <section className="form-section">
+          <h2 className="section-title">Modifier la section À propos</h2>
+          <form onSubmit={handleAboutSubmit}>
+            <input className="input" type="text" placeholder="Nom" value={aboutName} onChange={(e) => setAboutName(e.target.value)} />
+            <input className="input" type="text" placeholder="Titre" value={aboutTitle} onChange={(e) => setAboutTitle(e.target.value)} />
+            <input className="input" type="text" placeholder="URL image" value={aboutImageUrl} onChange={(e) => setAboutImageUrl(e.target.value)} />
+            <textarea className="textarea" placeholder="Bio" value={aboutBio} onChange={(e) => setAboutBio(e.target.value)} />
+            <button className="btn-primary" type="submit">💾 Enregistrer</button>
+          </form>
+        </section>
+      )}
+
+      {/* ...projets, blog, contact comme avant... */}
     </main>
   );
 }
